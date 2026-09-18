@@ -7,6 +7,7 @@ Keep a format that already works. When inspection is difficult, make the smalles
 ## What it does
 
 - Improves saved samples, generations, prompts, messages, and evaluation results intended for human inspection.
+- Uses a reader-first layout: requested content before incidental provenance, unless the user asks for another order. Only a title and brief source identification belong before the content.
 - Distinguishes payload from provenance by purpose, not field name: `seed`, `model_id`, and `split` may be the content being analyzed.
 - Preserves required JSON/JSONL schemas, full text, whitespace, literal escapes, message order, and tool-related structure.
 - Reuses existing provenance records and resolvable keys instead of mandating new IDs, manifests, hashes, or directory layouts.
@@ -99,11 +100,11 @@ The real newline is rendered, the literal backslash followed by `n` stays litera
 
 ## Validation and limits
 
-The instruction body was exercised through explicit file loading in Claude Code 2.1.270 (Opus 5), Codex CLI 0.154.0 (host default model), and OMP 18.2.5 (gpt-6-astra). Each ran a six-request synthetic batch covering an already-readable artifact, message rendering, reuse of existing provenance, analysis fields, a fixed JSONL consumer, and an unrelated configuration edit. Final artifacts passed 15 content and scope checks per host.
+The reader-first revision was exercised through explicit file loading in Claude Code 2.1.270 (Opus 5), Codex CLI 0.154.0 (host default model), and OMP 18.2.5 (gpt-6-astra). Each host ran two independent trials on a nested artifact containing top-level provenance, system/user messages, and tool definitions inside message text. Each also ran a three-case boundary batch: metadata fields as analysis content, an explicit provenance-first request, and an already-readable file.
 
-An initial run added a redundant provenance pointer; the wording was clarified and all three hosts were rerun. The name and heading were subsequently shortened to `artifact-format` without changing the behavior instructions. Installed file entrypoints were checked, and a fresh OMP process resolved `skill://artifact-format`.
+All six final nested trials placed the complete messages before long provenance, with source files unchanged and message strings preserved verbatim. Five also met the strict title/source-only preamble rule. One Claude trial retained a short preservation/safety note before the messages, so strict layout conformance is not fully achieved. All nine boundary cases passed their content, ordering, and source-preservation checks. Earlier failed outputs were retained locally rather than replaced by successful reruns.
 
-These are bounded smoke observations, not a benchmark or a guarantee of automatic invocation. Claude Code's behavior run used safe mode; Codex retained other installed skill context and encountered a sandbox namespace error before a successful retry. Installed automatic selection was not tested. The checks do not establish robust behavior for large datasets, concurrent writes, or historical-file migration. Raw local execution logs are not included in this repository.
+These are bounded smoke observations, not a benchmark or a guarantee of automatic invocation. Claude Code's runs used safe mode; OMP disabled other skill/rule/extension discovery; Codex retained other installed skill context and encountered sandbox namespace errors before successful retries. No matched no-skill control was run. Automatic selection, large datasets, concurrent writes, and historical-file migration remain unverified. Raw local execution logs are not included in this repository.
 
 ## License
 
